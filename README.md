@@ -16,15 +16,17 @@ The analysis clearly shows that **partial pivoting is critical** for stability i
 
 | Method | Time (s) | Residual | Status |
 | :--- | :--- | :--- | :--- |
-| **NumPy (Standard)** | ~0.0005 | $10^{-15}$ | ✅ Success |
-| **Gauss Partial Pivoting** | ~0.0500 | $10^{-14}$ | ✅ Success |
+| **NumPy (Standard)** | ~0.0005 | $10^{-10}$ | ✅ Success |
+| **Gauss Partial Pivoting** | ~0.0071 | $10^{-10}$ | ✅ Success |
 | **Gauss Naive** | N/A | High / Error | ❌ Failed |
+
+Relative Error vs NumPy (GPP): ~6.4e-16
 
 ## 🛠️ Installation & Usage
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/WarrenTruss.git
+   git clone https://github.com/tankistkebab/WarrenTruss.git
    cd WarrenTruss
    ```
 
@@ -42,8 +44,10 @@ The analysis clearly shows that **partial pivoting is critical** for stability i
 ## 🧪 Testing
 Run the automated tests to verify solver accuracy and physical consistency (equilibrium of forces):
 ```bash
-pytest tests/
+python -m pytest
 ```
+
+![Warren Truss Analysis](docs/bridge_analysis.png)
 
 ## 📝 Project Structure
 - `truss.py`: Bridge geometry and $Ax=b$ system generation.
