@@ -25,29 +25,27 @@ def test_vertical_reactions():
     Ry2 = x_sol[num_members + 2]
     
     total_reaction = Ry1 + Ry2
-    total_load = -np.sum(b[1::2]) # All vertical loads are in b[odd_indices] and are negative
+    total_load = np.sum(b[1::2]) # All vertical loads are in b[odd_indices]
     
     assert total_load > 0
     np.testing.assert_allclose(total_reaction, total_load, atol=1e-8)
 
 def test_symmetry():
     """Verify that for a symmetric bridge and load, reactions are equal."""
-    num_sections = 10 # Even number of sections
-    A, b, nodes, members = generate_bridge_system(num_sections)
-    x_sol = gauss_partial_pivoting(A, b)
-    
-    num_members = len(members)
-    Ry1 = x_sol[num_members + 1]
-    Ry2 = x_sol[num_members + 2]
-    
-    np.testing.assert_allclose(Ry1, Ry2, atol=1e-8)
+    # Test with even number of lower nodes (num_sections = 9 -> 10 nodes)
+    # and odd number of lower nodes (num_sections = 10 -> 11 nodes)
+    for n in [9, 10]:
+        A, b, nodes, members = generate_bridge_system(n)
+        x_sol = gauss_partial_pivoting(A, b)
+        
+        num_members = len(members)
+        Ry1 = x_sol[num_members + 1]
+        Ry2 = x_sol[num_members + 2]
+        
+        np.testing.assert_allclose(Ry1, Ry2, atol=1e-8, err_msg=f"Failed symmetry for n={n}")
 
 def test_naive_gauss_failure():
-    """Naive Gauss should raise ValueError if it hits a zero pivot (which it often does in truss problems)."""
+    """Naive Gauss should raise ValueError if it hits a zero pivot."""
     A, b, _, _ = generate_bridge_system(50)
-    # It might not always fail depending on the structure, but usually it does for these matrices
-    # without pivoting. If it doesn't fail, it's just stable enough by chance.
-    try:
+    with pytest.raises(ValueError):
         gauss_no_pivoting(A, b)
-    except ValueError as e:
-        assert "Zero pivot" in str(e)

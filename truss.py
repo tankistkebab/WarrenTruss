@@ -75,39 +75,18 @@ def generate_bridge_system(num_sections, L=2.0, H=1.5, load=10000.0):
     A[1, num_members+1] = 1.0   # Ry1
 
     # Last lower node: Fixed only Y (roller)
-    last_node_idx = num_nodes - 1 if (num_nodes - 1) % 2 == 0 else num_nodes - 2
-    # The last lower node is at index 2 * num_sections
     last_lower_node_idx = 2 * num_sections
     A[2*last_lower_node_idx+1, num_members+2] = 1.0 # Ry2
 
     # Apply Load
-    # Symmetrically apply load to central nodes
-    # We want to target nodes on the bottom chord
-    # num_sections + 1 is the number of lower nodes.
     lower_node_indices = [2*i for i in range(num_sections + 1)]
-    mid = len(lower_node_indices) // 2
+    num_lower = len(lower_node_indices)
     
-    # Apply load to 4 nodes around the center
-    # For odd number of nodes, mid is the center. For even, mid is to the right of center.
-    # range(mid - 2, mid + 2) for a bridge with at least 5 lower nodes
-    load_start = max(0, mid - 1)
-    load_end = min(len(lower_node_indices), mid + 2 if len(lower_node_indices) % 2 == 0 else mid + 1)
-    
-    # Corrected symmetry logic for central nodes
-    if num_sections >= 4:
-        # For a more robust symmetry, let's pick 4 nodes if possible
-        target_indices = lower_node_indices[mid-1:mid+2] if len(lower_node_indices)%2 != 0 else lower_node_indices[mid-2:mid+2]
-        # Wait, the request said range(n//2 - 2, n//2 + 2) was asymmetric. 
-        # If n=5 (nodes 0,1,2,3,4), n//2 = 2. range(0, 4) -> 0,1,2,3. Mid is 2.
-        # Let's just use a fixed number of nodes or a clearer range.
-        
-        num_load_nodes = 4
-        start_idx = max(0, (num_sections + 1 - num_load_nodes) // 2)
-        for i in range(start_idx, start_idx + num_load_nodes):
-            if i < num_sections + 1:
-                b[2*(2*i) + 1] -= load
-    else:
-        # Fallback for small bridges
-        b[2*(lower_node_indices[mid]) + 1] -= load
+    # Apply load: 4 nodes if num_lower is even, 3 nodes if num_lower is odd
+    num_load_nodes = 4 if num_lower % 2 == 0 else 3
+    start_idx = (num_lower - num_load_nodes) // 2
+    for i in range(start_idx, start_idx + num_load_nodes):
+        node_idx = lower_node_indices[i]
+        b[2*node_idx + 1] += load
 
     return A, b, nodes, members
