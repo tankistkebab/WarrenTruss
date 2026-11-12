@@ -16,11 +16,11 @@ The analysis clearly shows that **partial pivoting is critical** for stability i
 
 | Method | Time (s) | Residual | Status |
 | :--- | :--- | :--- | :--- |
-| **NumPy (Standard)** | ~0.0005 | $10^{-10}$ | ✅ Success |
-| **Gauss Partial Pivoting** | ~0.0071 | $10^{-10}$ | ✅ Success |
+| **NumPy (Standard)** | ~0.0005 | $2.4 \times 10^{-11}$ | ✅ Success |
+| **Gauss Partial Pivoting** | ~0.0071 | $2.4 \times 10^{-11}$ | ✅ Success |
 | **Gauss Naive** | N/A | High / Error | ❌ Failed |
 
-Relative Error vs NumPy (GPP): ~6.4e-16
+Relative Error vs NumPy (GPP): $2.5 \times 10^{-16}$
 
 ## 🛠️ Installation & Usage
 
