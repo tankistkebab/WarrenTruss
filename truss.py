@@ -78,15 +78,12 @@ def generate_bridge_system(num_sections, L=2.0, H=1.5, load=10000.0):
     last_lower_node_idx = 2 * num_sections
     A[2*last_lower_node_idx+1, num_members+2] = 1.0 # Ry2
 
-    # Apply Load
-    lower_node_indices = [2*i for i in range(num_sections + 1)]
-    num_lower = len(lower_node_indices)
-    
-    # Apply load: 4 nodes if num_lower is even, 3 nodes if num_lower is odd
+    # Apply Load to central lower nodes
+    num_lower = num_sections + 1
     num_load_nodes = 4 if num_lower % 2 == 0 else 3
     start_idx = (num_lower - num_load_nodes) // 2
     for i in range(start_idx, start_idx + num_load_nodes):
-        node_idx = lower_node_indices[i]
+        node_idx = 2 * i
         b[2*node_idx + 1] += load
 
     return A, b, nodes, members
